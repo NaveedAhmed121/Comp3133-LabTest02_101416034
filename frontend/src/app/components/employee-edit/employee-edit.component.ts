@@ -17,6 +17,7 @@ export class EmployeeEditComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
   employeeId = '';
+  photoPreview: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -50,11 +51,9 @@ export class EmployeeEditComponent implements OnInit {
     this.employeeService.getEmployeeById(id).subscribe({
       next: (data) => {
         this.employee = data;
-        // Format date as YYYY-MM-DD for the date input
         const rawDate = data.date_of_joining;
         let formattedDate = '';
         if (rawDate) {
-          // Handle ISO timestamps or plain date strings
           const d = new Date(rawDate);
           if (!isNaN(d.getTime())) {
             formattedDate = d.toISOString().split('T')[0];
@@ -74,6 +73,11 @@ export class EmployeeEditComponent implements OnInit {
           department: data.department,
           employee_photo: data.employee_photo || '',
         });
+
+        if (data.employee_photo) {
+          this.photoPreview = data.employee_photo;
+        }
+
         this.loading = false;
       },
       error: (err) => {
@@ -81,6 +85,29 @@ export class EmployeeEditComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  onFileChange(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      this.errorMessage = 'Please select a valid image file (JPEG, PNG, etc.).';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      this.photoPreview = base64;
+      this.employeeForm.patchValue({ employee_photo: base64 });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  clearPhoto(): void {
+    this.photoPreview = null;
+    this.employeeForm.patchValue({ employee_photo: '' });
   }
 
   onSubmit(): void {

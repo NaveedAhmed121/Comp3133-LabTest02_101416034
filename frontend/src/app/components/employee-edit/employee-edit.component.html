@@ -93,21 +93,39 @@
                   <div class="invalid-feedback">Date of joining is required.</div>
                 </div>
 
+                <!-- Profile Photo Upload -->
                 <div class="col-12">
                   <label class="form-label fw-semibold">
-                    Employee Photo URL <span class="text-muted small">(optional)</span>
+                    Profile Photo <span class="text-muted small">(optional)</span>
                   </label>
-                  <input type="url" class="form-control" formControlName="employee_photo"
-                    placeholder="https://example.com/photo.jpg" />
-                  @if (employeeForm.get('employee_photo')?.value) {
-                    <div class="mt-2 d-flex align-items-center gap-3">
-                      <img
-                        [src]="employeeForm.get('employee_photo')?.value"
-                        alt="Preview"
-                        class="rounded-circle border"
-                        style="width:64px;height:64px;object-fit:cover;"
-                      />
-                      <small class="text-muted">Photo preview</small>
+
+                  @if (!photoPreview) {
+                    <div class="border rounded p-4 text-center text-muted"
+                         style="border-style: dashed !important; cursor: pointer;"
+                         (click)="fileInput.click()">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                           class="mb-2 opacity-50" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                      </svg>
+                      <p class="mb-1 fw-semibold">Click to upload a new photo</p>
+                      <small>JPEG, PNG, GIF, WebP supported</small>
+                    </div>
+                  }
+
+                  <input #fileInput type="file" class="d-none" accept="image/*" (change)="onFileChange($event)" />
+
+                  @if (photoPreview) {
+                    <div class="d-flex align-items-center gap-3 mt-2 p-3 bg-light rounded">
+                      <img [src]="photoPreview" alt="Preview" class="rounded-circle border"
+                           style="width:80px;height:80px;object-fit:cover;" />
+                      <div>
+                        <p class="mb-1 fw-semibold">Current photo</p>
+                        <button type="button" class="btn btn-sm btn-outline-secondary me-2"
+                                (click)="fileInput.click()">Change photo</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                (click)="clearPhoto()">Remove</button>
+                      </div>
                     </div>
                   }
                 </div>

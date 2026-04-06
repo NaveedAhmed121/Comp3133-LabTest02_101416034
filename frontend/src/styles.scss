@@ -1,0 +1,42 @@
+/* You can add global styles to this file, and also import other style files */
+
+body {
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Pink badge for Female gender */
+.bg-pink {
+  background-color: #d63384 !important;
+  color: #fff;
+}
+
+/* Table action button group sizing */
+.btn-group .btn {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.6rem;
+}
+
+/* Card shadow enhancement */
+.card {
+  border: none;
+  border-radius: 0.5rem;
+}
+
+/* Navbar brand */
+.navbar-brand {
+  font-size: 1.1rem;
+  letter-spacing: 0.03em;
+}
+
+/* Smooth transitions on buttons */
+.btn {
+  transition: all 0.15s ease-in-out;
+}
+
+/* Form control focus ring */
+.form-control:focus,
+.form-select:focus {
+  border-color: #343a40;
+  box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.2);
+}

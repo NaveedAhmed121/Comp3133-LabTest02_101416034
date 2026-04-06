@@ -1,0 +1,21 @@
+{
+  "name": "101416034_comp3133_assignment1",
+  "version": "1.0.0",
+  "description": "COMP3133-Assignment1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Naveed Ahmed",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server-express": "^3.13.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.7",
+    "graphql": "^16.8.1",
+    "mongoose": "^8.1.3"
+  }
+}

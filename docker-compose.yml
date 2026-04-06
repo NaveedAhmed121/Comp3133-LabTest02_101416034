@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  # ─── MongoDB ──────────────────────────────────────────────────────────────────
+  mongo:
+    image: mongo:7
+    container_name: comp3133_mongo
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app_network
+
+  # ─── Backend (Node / Express / Apollo GraphQL) ────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: comp3133_backend
+    restart: unless-stopped
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/comp3133
+      PORT: 4000
+      CORS_ORIGIN: http://localhost:4200,http://frontend:80
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mongo
+    networks:
+      - app_network
+
+  # ─── Frontend (Angular → nginx) ───────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: comp3133_frontend
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - app_network
+
+volumes:
+  mongo_data:
+
+networks:
+  app_network:
+    driver: bridge

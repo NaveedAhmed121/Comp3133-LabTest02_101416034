@@ -1,0 +1,131 @@
+<app-navbar></app-navbar>
+
+<div class="container mt-4">
+  @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-dark" role="status"></div>
+      <p class="mt-2 text-muted">Loading employee...</p>
+    </div>
+  }
+
+  @if (errorMessage && !loading && !employee) {
+    <div class="alert alert-danger">
+      {{ errorMessage }}
+      <a [routerLink]="['/employees']" class="btn btn-sm btn-outline-danger ms-3">Back to List</a>
+    </div>
+  }
+
+  @if (!loading && employee) {
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow">
+          <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">Edit Employee</h5>
+            <a [routerLink]="['/employees']" class="btn btn-sm btn-outline-light">Back to List</a>
+          </div>
+          <div class="card-body p-4">
+            @if (successMessage) {
+              <div class="alert alert-success">{{ successMessage }}</div>
+            }
+            @if (errorMessage && !loading) {
+              <div class="alert alert-danger">{{ errorMessage }}</div>
+            }
+
+            <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">First Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" formControlName="first_name"
+                    [class.is-invalid]="isInvalid('first_name')" />
+                  <div class="invalid-feedback">First name is required (min 2 chars).</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Last Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" formControlName="last_name"
+                    [class.is-invalid]="isInvalid('last_name')" />
+                  <div class="invalid-feedback">Last name is required (min 2 chars).</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                  <input type="email" class="form-control" formControlName="email"
+                    [class.is-invalid]="isInvalid('email')" />
+                  <div class="invalid-feedback">A valid email is required.</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Gender <span class="text-danger">*</span></label>
+                  <select class="form-select" formControlName="gender" [class.is-invalid]="isInvalid('gender')">
+                    <option value="">-- Select Gender --</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <div class="invalid-feedback">Gender is required.</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Designation <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" formControlName="designation"
+                    [class.is-invalid]="isInvalid('designation')" />
+                  <div class="invalid-feedback">Designation is required.</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Department <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" formControlName="department"
+                    [class.is-invalid]="isInvalid('department')" />
+                  <div class="invalid-feedback">Department is required.</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Salary ($) <span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" formControlName="salary"
+                    [class.is-invalid]="isInvalid('salary')" min="0" />
+                  <div class="invalid-feedback">Salary must be a positive number.</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Date of Joining <span class="text-danger">*</span></label>
+                  <input type="date" class="form-control" formControlName="date_of_joining"
+                    [class.is-invalid]="isInvalid('date_of_joining')" />
+                  <div class="invalid-feedback">Date of joining is required.</div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label fw-semibold">
+                    Employee Photo URL <span class="text-muted small">(optional)</span>
+                  </label>
+                  <input type="url" class="form-control" formControlName="employee_photo"
+                    placeholder="https://example.com/photo.jpg" />
+                  @if (employeeForm.get('employee_photo')?.value) {
+                    <div class="mt-2 d-flex align-items-center gap-3">
+                      <img
+                        [src]="employeeForm.get('employee_photo')?.value"
+                        alt="Preview"
+                        class="rounded-circle border"
+                        style="width:64px;height:64px;object-fit:cover;"
+                      />
+                      <small class="text-muted">Photo preview</small>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-warning" [disabled]="saving">
+                  @if (saving) {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                  }
+                  {{ saving ? 'Saving...' : 'Update Employee' }}
+                </button>
+                <a [routerLink]="['/employees/view', employeeId]" class="btn btn-outline-secondary">Cancel</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

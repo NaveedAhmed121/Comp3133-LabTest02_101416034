@@ -1,0 +1,156 @@
+<app-navbar></app-navbar>
+
+<div class="container-fluid mt-4">
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Employee List</h2>
+    <a [routerLink]="['/employees/add']" class="btn btn-success">+ Add Employee</a>
+  </div>
+
+  <!-- Alerts -->
+  @if (errorMessage) {
+    <div class="alert alert-danger alert-dismissible">
+      {{ errorMessage }}
+      <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+    </div>
+  }
+  @if (successMessage) {
+    <div class="alert alert-success alert-dismissible">
+      {{ successMessage }}
+      <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+    </div>
+  }
+
+  <!-- Search Bar -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Search By</label>
+          <select class="form-select" [(ngModel)]="searchType">
+            <option value="designation">Designation</option>
+            <option value="department">Department</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Search Value</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="searchValue"
+            placeholder="Enter {{ searchType }}..."
+            (keyup.enter)="onSearch()"
+          />
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button class="btn btn-primary flex-grow-1" (click)="onSearch()">Search</button>
+          @if (isSearching) {
+            <button class="btn btn-outline-secondary" (click)="clearSearch()">Clear</button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-dark" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading employees...</p>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading && employees.length === 0 && !errorMessage) {
+    <div class="text-center py-5">
+      <div class="mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#adb5bd" viewBox="0 0 16 16">
+          <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+        </svg>
+      </div>
+      <h5 class="text-muted">No employees found.</h5>
+      <a [routerLink]="['/employees/add']" class="btn btn-dark mt-2">Add First Employee</a>
+    </div>
+  }
+
+  <!-- Employees Table -->
+  @if (!loading && employees.length > 0) {
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover table-striped mb-0">
+            <thead class="table-dark">
+              <tr>
+                <th>#</th>
+                <th>Photo</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Gender</th>
+                <th>Designation</th>
+                <th>Department</th>
+                <th>Salary</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (emp of employees; track emp._id; let i = $index) {
+                <tr>
+                  <td class="text-muted align-middle">{{ i + 1 }}</td>
+                  <td class="align-middle">
+                    @if (emp.employee_photo) {
+                      <img
+                        [src]="emp.employee_photo"
+                        [alt]="emp.first_name"
+                        class="rounded-circle"
+                        style="width:36px;height:36px;object-fit:cover;"
+                      />
+                    } @else {
+                      <div
+                        class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold"
+                        style="width:36px;height:36px;font-size:0.85rem;"
+                      >
+                        {{ emp.first_name.charAt(0) }}{{ emp.last_name.charAt(0) }}
+                      </div>
+                    }
+                  </td>
+                  <td class="align-middle">{{ emp.first_name }}</td>
+                  <td class="align-middle">{{ emp.last_name }}</td>
+                  <td class="align-middle">{{ emp.email }}</td>
+                  <td class="align-middle">
+                    <span
+                      class="badge"
+                      [class.bg-info]="emp.gender === 'Male'"
+                      [class.bg-pink]="emp.gender === 'Female'"
+                      [class.bg-secondary]="emp.gender === 'Other'"
+                    >{{ emp.gender }}</span>
+                  </td>
+                  <td class="align-middle">{{ emp.designation }}</td>
+                  <td class="align-middle">{{ emp.department }}</td>
+                  <td class="align-middle">{{ emp.salary | currency }}</td>
+                  <td class="text-center align-middle">
+                    <div class="btn-group btn-group-sm" role="group">
+                      <a [routerLink]="['/employees/view', emp._id]" class="btn btn-primary" title="View">View</a>
+                      <a [routerLink]="['/employees/edit', emp._id]" class="btn btn-warning" title="Edit">Edit</a>
+                      <button
+                        class="btn btn-danger"
+                        title="Delete"
+                        (click)="onDelete(emp._id, emp.first_name + ' ' + emp.last_name)"
+                      >Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer text-muted small">
+        Showing {{ employees.length }} employee{{ employees.length !== 1 ? 's' : '' }}
+      </div>
+    </div>
+  }
+</div>

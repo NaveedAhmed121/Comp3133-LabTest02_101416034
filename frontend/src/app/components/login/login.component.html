@@ -1,0 +1,52 @@
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card shadow" style="min-width: 380px; max-width: 440px; width: 100%;">
+    <div class="card-header bg-dark text-white text-center py-3">
+      <h4 class="mb-0 fw-bold">Employee Management App</h4>
+      <small class="text-secondary">Sign in to your account</small>
+    </div>
+    <div class="card-body p-4">
+      @if (errorMessage) {
+        <div class="alert alert-danger">{{ errorMessage }}</div>
+      }
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label class="form-label fw-semibold" for="usernameOrEmail">Username or Email</label>
+          <input
+            id="usernameOrEmail"
+            type="text"
+            class="form-control"
+            formControlName="usernameOrEmail"
+            placeholder="Enter username or email"
+            [class.is-invalid]="loginForm.get('usernameOrEmail')?.invalid && loginForm.get('usernameOrEmail')?.touched"
+          />
+          <div class="invalid-feedback">Username or email is required.</div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold" for="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            class="form-control"
+            formControlName="password"
+            placeholder="Enter password"
+            [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          />
+          <div class="invalid-feedback">Password must be at least 6 characters.</div>
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100" [disabled]="loginForm.invalid || loading">
+          @if (loading) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          {{ loading ? 'Signing in...' : 'Login' }}
+        </button>
+      </form>
+    </div>
+    <div class="card-footer text-center py-3">
+      <span class="text-muted">Don't have an account? </span>
+      <a [routerLink]="['/signup']" class="text-decoration-none fw-semibold">Sign up</a>
+    </div>
+  </div>
+</div>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { EmployeeService, Employee } from '../../services/employee.service';
+import { UploadService } from '../../services/upload.service';
 import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
@@ -14,16 +15,19 @@ export class EmployeeEditComponent implements OnInit {
   employee: Employee | null = null;
   loading = true;
   saving = false;
+  uploading = false;
   errorMessage = '';
   successMessage = '';
   employeeId = '';
   photoPreview: string | null = null;
+  selectedFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private employeeService: EmployeeService
+    private employeeService: EmployeeService,
+    private uploadService: UploadService
   ) {
     this.employeeForm = this.fb.group({
       first_name: ['', [Validators.required, Validators.minLength(2)]],
@@ -96,17 +100,19 @@ export class EmployeeEditComponent implements OnInit {
       return;
     }
 
+    this.selectedFile = file;
+
+    // Show local preview immediately
     const reader = new FileReader();
     reader.onload = () => {
-      const base64 = reader.result as string;
-      this.photoPreview = base64;
-      this.employeeForm.patchValue({ employee_photo: base64 });
+      this.photoPreview = reader.result as string;
     };
     reader.readAsDataURL(file);
   }
 
   clearPhoto(): void {
     this.photoPreview = null;
+    this.selectedFile = null;
     this.employeeForm.patchValue({ employee_photo: '' });
   }
 
@@ -116,9 +122,29 @@ export class EmployeeEditComponent implements OnInit {
       return;
     }
 
-    this.saving = true;
     this.errorMessage = '';
 
+    if (this.selectedFile) {
+      // Upload photo via HttpClient first, then save employee
+      this.uploading = true;
+      this.uploadService.uploadPhoto(this.selectedFile).subscribe({
+        next: (url) => {
+          this.uploading = false;
+          this.employeeForm.patchValue({ employee_photo: url });
+          this.saveEmployee();
+        },
+        error: (err) => {
+          this.uploading = false;
+          this.errorMessage = err.error?.error || 'Photo upload failed.';
+        },
+      });
+    } else {
+      this.saveEmployee();
+    }
+  }
+
+  private saveEmployee(): void {
+    this.saving = true;
     const formValue = this.employeeForm.value;
     const input = {
       ...formValue,

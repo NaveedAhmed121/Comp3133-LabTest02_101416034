@@ -1,0 +1,23 @@
+<div class="filter-container">
+  <div class="filter-card">
+    <div class="filter-icon">
+      <mat-icon>travel_explore</mat-icon>
+    </div>
+    <h2 class="filter-title">Filter Missions</h2>
+    <div class="filter-controls">
+      <mat-form-field appearance="outline" class="year-select">
+        <mat-label>Launch Year</mat-label>
+        <mat-select [(ngModel)]="selectedYear" (ngModelChange)="onYearChange($event)">
+          <mat-option value="">All Years</mat-option>
+          <mat-option *ngFor="let year of years" [value]="year">{{ year }}</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>calendar_today</mat-icon>
+      </mat-form-field>
+
+      <button mat-stroked-button (click)="clearFilter()" *ngIf="selectedYear" class="clear-btn">
+        <mat-icon>clear</mat-icon>
+        Clear Filter
+      </button>
+    </div>
+  </div>
+</div>

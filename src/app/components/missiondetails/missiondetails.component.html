@@ -1,0 +1,163 @@
+<div class="details-page">
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p>Loading mission details...</p>
+  </div>
+
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-icon>error_outline</mat-icon>
+    <p>Failed to load mission details.</p>
+    <button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
+  </div>
+
+  <ng-container *ngIf="!loading && !error && mission">
+    <!-- Hero Banner -->
+    <div class="mission-hero">
+      <div class="hero-content">
+        <button mat-icon-button class="back-btn" (click)="goBack()" title="Back to missions">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div class="hero-main">
+          <img *ngIf="mission.links.mission_patch" [src]="mission.links.mission_patch" alt="Mission Patch" class="mission-patch" />
+          <img *ngIf="!mission.links.mission_patch && mission.links.mission_patch_small" [src]="mission.links.mission_patch_small" alt="Mission Patch" class="mission-patch" />
+          <div class="hero-text">
+            <div class="flight-badge">Flight #{{ mission.flight_number }}</div>
+            <h1>{{ mission.mission_name }}</h1>
+            <div class="meta-row">
+              <span class="year-badge"><mat-icon>calendar_today</mat-icon>{{ mission.launch_year }}</span>
+              <span
+                class="status-badge"
+                [class.success]="mission.launch_success === true"
+                [class.failed]="mission.launch_success === false"
+                [class.tbd]="mission.launch_success === null"
+              >
+                <mat-icon>{{ mission.launch_success ? 'check_circle' : (mission.launch_success === false ? 'cancel' : 'schedule') }}</mat-icon>
+                {{ mission.launch_success ? 'Successful Launch' : (mission.launch_success === false ? 'Failed Launch' : 'TBD') }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details Content -->
+    <div class="details-content">
+      <div class="details-grid">
+
+        <!-- Mission Info -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="card-icon">info</mat-icon>
+            <mat-card-title>Mission Information</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-row">
+              <span class="label">Mission Name</span>
+              <span class="value">{{ mission.mission_name }}</span>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="info-row">
+              <span class="label">Flight Number</span>
+              <span class="value highlight">#{{ mission.flight_number }}</span>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="info-row">
+              <span class="label">Launch Year</span>
+              <span class="value">{{ mission.launch_year }}</span>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="info-row">
+              <span class="label">Launch Date (UTC)</span>
+              <span class="value">{{ mission.launch_date_utc | date:'medium' }}</span>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="info-row">
+              <span class="label">Status</span>
+              <span class="value">
+                <span class="status-inline" [class.success]="mission.launch_success" [class.failed]="mission.launch_success === false">
+                  {{ mission.launch_success ? 'Success' : (mission.launch_success === false ? 'Failed' : 'TBD') }}
+                </span>
+              </span>
+            </div>
+
+            <div class="details-text" *ngIf="mission.details">
+              <mat-divider></mat-divider>
+              <div class="info-row vertical">
+                <span class="label">Details</span>
+                <p class="value detail-text">{{ mission.details }}</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Rocket Info -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="card-icon rocket">rocket_launch</mat-icon>
+            <mat-card-title>Rocket Details</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="rocket-display">
+              <mat-icon class="big-rocket-icon">rocket_launch</mat-icon>
+              <div class="rocket-name">{{ mission.rocket.rocket_name }}</div>
+              <div class="rocket-type">{{ mission.rocket.rocket_type }}</div>
+              <div class="rocket-id">ID: {{ mission.rocket.rocket_id }}</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Mission Patch -->
+        <mat-card class="info-card patch-card" *ngIf="mission.links.mission_patch_small">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="card-icon">image</mat-icon>
+            <mat-card-title>Mission Patch</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="patch-container">
+              <img [src]="mission.links.mission_patch_small" alt="Mission Patch Small" class="patch-img" />
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Links -->
+        <mat-card class="info-card links-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="card-icon links">link</mat-icon>
+            <mat-card-title>Mission Links</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="links-list">
+              <a *ngIf="mission.links.article_link" [href]="mission.links.article_link" target="_blank" class="link-item">
+                <mat-icon>article</mat-icon>
+                <span>Read Article</span>
+                <mat-icon class="external">open_in_new</mat-icon>
+              </a>
+              <a *ngIf="mission.links.wikipedia" [href]="mission.links.wikipedia" target="_blank" class="link-item">
+                <mat-icon>public</mat-icon>
+                <span>Wikipedia</span>
+                <mat-icon class="external">open_in_new</mat-icon>
+              </a>
+              <a *ngIf="mission.links.video_link" [href]="mission.links.video_link" target="_blank" class="link-item video">
+                <mat-icon>play_circle_filled</mat-icon>
+                <span>Watch Video</span>
+                <mat-icon class="external">open_in_new</mat-icon>
+              </a>
+              <div *ngIf="!mission.links.article_link && !mission.links.wikipedia && !mission.links.video_link" class="no-links">
+                <mat-icon>link_off</mat-icon>
+                <p>No links available for this mission.</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+
+      <div class="back-action">
+        <button mat-raised-button color="primary" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Back to Mission List
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</div>

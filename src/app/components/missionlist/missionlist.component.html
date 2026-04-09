@@ -1,0 +1,81 @@
+<div class="page-header">
+  <div class="header-content">
+    <mat-icon class="rocket-icon">rocket_launch</mat-icon>
+    <h1>SpaceX Mission Control</h1>
+    <p class="subtitle">Explore all SpaceX launches</p>
+  </div>
+</div>
+
+<app-missionfilter (yearSelected)="onYearFilter($event)" [selectedYear]="selectedYear"></app-missionfilter>
+
+<div class="missions-container">
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p>Loading missions...</p>
+  </div>
+
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-icon>error_outline</mat-icon>
+    <p>Failed to load missions. Please try again.</p>
+    <button mat-raised-button color="primary" (click)="loadMissions()">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error" class="results-info">
+    <span class="results-count">{{ missions.length }} missions found</span>
+    <span *ngIf="selectedYear" class="filter-tag">
+      <mat-icon>filter_list</mat-icon> {{ selectedYear }}
+    </span>
+  </div>
+
+  <div *ngIf="!loading && !error" class="missions-grid">
+    <mat-card *ngFor="let mission of missions" class="mission-card" (click)="viewDetails(mission.flight_number)">
+      <mat-card-header>
+        <div mat-card-avatar class="mission-avatar">
+          <img *ngIf="mission.links.mission_patch_small" [src]="mission.links.mission_patch_small" alt="Mission Patch" />
+          <mat-icon *ngIf="!mission.links.mission_patch_small">rocket</mat-icon>
+        </div>
+        <mat-card-title>{{ mission.mission_name }}</mat-card-title>
+        <mat-card-subtitle>
+          <span class="flight-number">Flight #{{ mission.flight_number }}</span>
+          &bull;
+          <span class="launch-year">{{ mission.launch_year }}</span>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="rocket-info">
+          <mat-icon>rocket_launch</mat-icon>
+          <span>{{ mission.rocket.rocket_name }}</span>
+          <span class="rocket-type">({{ mission.rocket.rocket_type }})</span>
+        </div>
+
+        <p class="mission-details" *ngIf="mission.details">{{ mission.details }}</p>
+        <p class="mission-details no-details" *ngIf="!mission.details">No details available.</p>
+
+        <div class="status-chip">
+          <mat-chip [class]="mission.launch_success ? 'success-chip' : (mission.launch_success === false ? 'fail-chip' : 'upcoming-chip')">
+            <mat-icon>{{ mission.launch_success ? 'check_circle' : (mission.launch_success === false ? 'cancel' : 'schedule') }}</mat-icon>
+            {{ mission.launch_success ? 'Success' : (mission.launch_success === false ? 'Failed' : 'TBD') }}
+          </mat-chip>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions class="card-actions">
+        <div class="links-row">
+          <a *ngIf="mission.links.article_link" [href]="mission.links.article_link" target="_blank" mat-icon-button title="Article" (click)="$event.stopPropagation()">
+            <mat-icon>article</mat-icon>
+          </a>
+          <a *ngIf="mission.links.wikipedia" [href]="mission.links.wikipedia" target="_blank" mat-icon-button title="Wikipedia" (click)="$event.stopPropagation()">
+            <mat-icon>public</mat-icon>
+          </a>
+          <a *ngIf="mission.links.video_link" [href]="mission.links.video_link" target="_blank" mat-icon-button title="Video" (click)="$event.stopPropagation()">
+            <mat-icon>play_circle</mat-icon>
+          </a>
+        </div>
+        <button mat-raised-button color="primary" (click)="$event.stopPropagation(); viewDetails(mission.flight_number)">
+          View Details
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

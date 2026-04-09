@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/101416034_comp3133_assignment2/browser",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
